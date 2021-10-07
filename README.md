@@ -1,4 +1,4 @@
 # villamos_aduty
-Egyszerű kis discord role-os admin duty, ami még nem optimalizált, de majd egyszer az is meglesz.
+Egyszerű kis discord role-os admin duty, mostmár optimalizálva Csoki javaslataival :)
 # Felhasználtam:
 vrp_icons
