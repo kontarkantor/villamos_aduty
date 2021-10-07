@@ -59,6 +59,7 @@ end
 AddEventHandler('playerDropped', function(reason)
     if inDuty[source] ~= nil then
         inDuty[source] = nil
+        TriggerClientEvent("villamos_aduty:sendData", -1, inDuty)
         if Config.Webhook ~= nil then
             sendToDiscord(GetPlayerName(source), GetPlayerName(source) .. " kilépett a szolgálatból! (lelépett a szerverről)", 16711680)
         end
@@ -83,6 +84,7 @@ RegisterCommand('amduty', function(source, args, raw)
                   })                  
             else
                 inDuty[source] = aData
+                TriggerClientEvent("villamos_aduty:sendData", -1, inDuty)
                 TriggerClientEvent('chat:addMessage', -1, {
                     color = { 255, 0, 0},
                     multiline = true,
@@ -96,6 +98,7 @@ RegisterCommand('amduty', function(source, args, raw)
             end)
         else
             inDuty[source] = nil
+            TriggerClientEvent("villamos_aduty:sendData", -1, inDuty)
             TriggerClientEvent('chat:addMessage', -1, {
                 color = { 255, 0, 0},
                 multiline = true,
@@ -111,14 +114,12 @@ end, false);
 
 
 -------------KLIENS KÜLDÉS----------
-Citizen.CreateThread(function()
-	while true do
-        Citizen.Wait(2000)
-        TriggerClientEvent("villamos_aduty:sendData", -1, inDuty)
-    end
+RegisterNetEvent('esx:playerLoaded')
+AddEventHandler('esx:playerLoaded', function(playerData)
+    TriggerClientEvent("villamos_aduty:sendData", source, inDuty)
 end)
 
 --------------EXPORTOK---------------
 exports('getDutys', function()
     return inDuty;
-end);
+end)
