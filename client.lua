@@ -74,36 +74,14 @@ end)
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(5)
-        for idh, adat in pairs(kozeliek) do
-            if NetworkIsPlayerActive(idh) then
-
-                x2, y2, z2 = table.unpack(GetPedBoneCoords(GetPlayerPed(idh), 31086, 0, 0, 0))
-                DrawText3D(x2, y2, z2+0.3, adat.tag, 255, 255, 255, 0.7)
-                DrawMarker(9, x2, y2, z2+1.1, 0.0, 0.0, 0.0, 90.0, 90.0, 0.0, 1.0, 1.0, 1.0, 255, 255, 255, 255, true, false, 2, true, adat.txdN, adat.txdN, false)
-            
-            end
-        end
-    end
-end)
-
-Citizen.CreateThread(function()
-    while true do
-        Citizen.Wait(500)
         for id, data in pairs(adminok) do
-            local hId = GetPlayerFromServerId(id)
-            if NetworkIsPlayerActive(hId) then
-
+            if NetworkIsPlayerActive(GetPlayerFromServerId(id)) then
                 x1, y1, z1 = table.unpack( GetEntityCoords( GetPlayerPed( -1 ), true ) )
-                x2, y2, z2 = table.unpack( GetEntityCoords( GetPlayerPed(hId), true ) )
+                x2, y2, z2 = table.unpack( GetEntityCoords( GetPlayerPed(GetPlayerFromServerId(id)), true ) )
                 distance = math.floor(GetDistanceBetweenCoords(x1+0.1,  y1,  z1,  x2,  y2,  z2,  true))
-
                 if (distance < 20) then
-                    kozeliek[hId] = {
-                        tag = data[2] .. GetPlayerName(hId),
-                        txdN = data[3]
-                    }
-                else
-                    kozeliek[hId] = nil
+                    DrawText3D(x2, y2, z2+1.1, data[2] .. GetPlayerName(GetPlayerFromServerId(id)), 255, 255, 255, 0.7)
+                    DrawMarker(9, x2, y2, z2+1.8, 0.0, 0.0, 0.0, 90.0, 90.0, 0.0, 1.0, 1.0, 1.0, 255, 255, 255, 255, true, false, 2, true, data[3], data[3], false)
                 end
             end
         end
