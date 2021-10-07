@@ -1,5 +1,4 @@
 local adminok = {}
-local kozeliek = {}
 local state = false
 
 
