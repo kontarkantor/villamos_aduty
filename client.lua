@@ -120,4 +120,11 @@ function DrawText3D(x,y,z, text, r, g, b, scl)
 end
 
 -------------------:)-------------------
+AddEventHandler('onResourceStop', function(resource)
+	if resource == GetCurrentResourceName() then
+		if state == true then
+            TriggerEvent('villamos_aduty:disable')
+        end
+	end
+end)
 print('fut :)')
