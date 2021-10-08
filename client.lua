@@ -28,7 +28,7 @@ AddEventHandler('villamos_aduty:enable', function()
 	    SetPlayerModel(PlayerId(), hash)
     end
 	
-	state = true;
+	state = true
     SetPlayerInvincible(PlayerId(), true)
 end)
 
@@ -41,7 +41,7 @@ AddEventHandler('villamos_aduty:disable', function()
 	    end)
 	end
 
-    state = false;
+    state = false
     SetPlayerInvincible(PlayerId(), false)
 end)
 
