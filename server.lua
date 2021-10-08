@@ -24,21 +24,28 @@ function getPlayerDc(playId)
 end
 
 function getLabelTes(dcId, cb)
-    if dcId == "" then
-        cb(nil)
-    end
-    PerformHttpRequest("https://discordapp.com/api/guilds/" .. Config.GuildId .. "/members/" .. dcId, function(errorCode, resultData, resultHeaders)
-        local data = {data=resultData, code=errorCode, headers=resultHeaders}
-        local roles = json.decode(resultData).roles
-        for v=1, #roles, 1 do 
-            for i, k in pairs(Config.Admins) do
-                if roles[v] == k[1] then
-                    cb(k)
-                    return
+    local infok = nil
+    if dcId ~= nil then
+        PerformHttpRequest("https://discordapp.com/api/guilds/" .. Config.GuildId .. "/members/" .. dcId, function(errorCode, resultData, resultHeaders)
+            if resultData ~= nil then
+                local data = {data=resultData, code=errorCode, headers=resultHeaders}
+                local roles = json.decode(resultData).roles
+                for v=1, #roles, 1 do 
+                    for i, k in pairs(Config.Admins) do
+                        if roles[v] == k[1] then
+                            infok = k
+                        end
+                    end
                 end
+            else
+                print('Előfurdalhat konfigurációs hiba vagy olyan játékos próbált dutyzni aki nem discord tag!')
             end
-        end
-    end, "GET", "", {["Content-Type"] = "application/json", ["Authorization"] = "Bot " .. Config.BotToken})
+        end, "GET", "", {["Content-Type"] = "application/json", ["Authorization"] = "Bot " .. Config.BotToken})
+    end
+
+    Wait(700)
+
+    cb(infok)
 end
 
 function sendToDiscord(name, message, color)
@@ -71,30 +78,30 @@ AddEventHandler('playerDropped', function(reason)
     end
 end)
 
-RegisterCommand('amduty', function(source, args, raw)
+RegisterCommand(Config.Command, function(source, args, raw)
 	local adm = ESX.GetPlayerFromId(source)
     if adm.getGroup() ~= "user" then
         if inDuty[source] == nil then
             getLabelTes(getPlayerDc(source), function(aData)
-            if aData == nil then 
-                TriggerClientEvent('chat:addMessage', source, {
-                    color = { 255, 0, 0},
-                    multiline = true,
-                    args = {"Aduty", "Nincs megfelelő rangod Discordon, így nem léphetsz szolgálatba!"}
-                  })                  
-            else
-                inDuty[source] = aData
-                TriggerClientEvent("villamos_aduty:sendData", -1, inDuty)
-                TriggerClientEvent('chat:addMessage', -1, {
-                    color = { 255, 0, 0},
-                    multiline = true,
-                    args = {"Aduty", GetPlayerName(source) .. " szolgálatba lépett! /report [üzenet] a segítség kéréshez"}
-                })
-                TriggerClientEvent('villamos_aduty:enable', source)
-                if Config.Webhook ~= nil then
-                    sendToDiscord(GetPlayerName(source), GetPlayerName(source) .. " szolgálatba lépett!", 6415476)
+                if aData == nil then 
+                    TriggerClientEvent('chat:addMessage', source, {
+                        color = { 255, 0, 0},
+                        multiline = true,
+                        args = {"Aduty", "Nincs megfelelő rangod Discordon, így nem léphetsz szolgálatba!"}
+                     })                  
+                else
+                    inDuty[source] = aData
+                    TriggerClientEvent("villamos_aduty:sendData", -1, inDuty)
+                    TriggerClientEvent('chat:addMessage', -1, {
+                        color = { 255, 0, 0},
+                        multiline = true,
+                        args = {"Aduty", GetPlayerName(source) .. " szolgálatba lépett! /report [üzenet] a segítség kéréshez"}
+                    })
+                    TriggerClientEvent('villamos_aduty:enable', source)
+                    if Config.Webhook ~= nil then
+                        sendToDiscord(GetPlayerName(source), GetPlayerName(source) .. " szolgálatba lépett!", 6415476)
+                    end
                 end
-            end
             end)
         else
             inDuty[source] = nil
