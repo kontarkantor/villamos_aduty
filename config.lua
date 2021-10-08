@@ -1,5 +1,7 @@
 Config = {}
 
+Config.Command = 'amduty'
+
 Config.Ped = 's_m_m_chemsec_01' --ha nem szeretnél pedet állítsd nil-re
 
 Config.Icons = {
