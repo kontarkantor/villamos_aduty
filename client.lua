@@ -1,5 +1,6 @@
 local adminok = {}
-local state = false
+local inDuty = false
+local lastped = GetHashKey('mp_m_freemode_01')
 
 
 --------------IKONOK--------------
@@ -19,6 +20,7 @@ end)
 RegisterNetEvent('villamos_aduty:enable')
 AddEventHandler('villamos_aduty:enable', function()
     if Config.Ped ~= nil then
+        lastped = GetEntityModel(PlayerPedId())
 	    local hash = GetHashKey(Config.Ped)
 	    RequestModel(hash)
 	    while not HasModelLoaded(hash)
@@ -28,7 +30,7 @@ AddEventHandler('villamos_aduty:enable', function()
 	    SetPlayerModel(PlayerId(), hash)
     end
 	
-	state = true
+	inDuty = true
     SetPlayerInvincible(PlayerId(), true)
 end)
 
@@ -41,12 +43,12 @@ AddEventHandler('villamos_aduty:disable', function()
 	    end)
 	end
 
-    state = false
+    inDuty = false
     SetPlayerInvincible(PlayerId(), false)
 end)
 
 function loadplayerskin()
-	local hash = GetHashKey('mp_m_freemode_01')
+	local hash = lastped
 	RequestModel(hash)
 	while not HasModelLoaded(hash)
 			do RequestModel(hash)
@@ -58,13 +60,10 @@ end
 
 Citizen.CreateThread(function()
     while true do
-        if (state and not GetPlayerInvincible(PlayerId())) then 
-            SetPlayerInvincible(PlayerId(), true)
-        elseif (not state and GetPlayerInvincible(PlayerId())) then 
-            SetPlayerInvincible(PlayerId(), false)
-        end
-
         Citizen.Wait(2000)
+        if (not GetPlayerInvincible(PlayerId()) and inDuty) then 
+            SetPlayerInvincible(PlayerId(), true)
+        end
     end
 end)
 
@@ -122,7 +121,7 @@ end
 -------------------:)-------------------
 AddEventHandler('onResourceStop', function(resource)
 	if resource == GetCurrentResourceName() then
-		if state == true then
+		if inDuty == true then
             TriggerEvent('villamos_aduty:disable')
         end
 	end
